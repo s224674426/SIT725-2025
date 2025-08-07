@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Locate a Socket</title></head>
+<body>
+  <h2>Locate a Socket – Test</h2>
+  <button onclick="fetchSockets()">Show Sockets</button>
+  <div id="output"></div>
+  <script>
+    async function fetchSockets() {
+      const res = await fetch('http://localhost:5000/api/sockets');
+      const data = await res.json();
+      document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
+
+
