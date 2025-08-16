@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Products</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <h1>Products</h1>
+  <div id="list"></div>
+
+  <form id="form">
+    <input name="name" placeholder="name" required />
+    <input name="price" type="number" step="0.01" placeholder="price" required />
+    <input name="description" placeholder="description" />
+    <button type="submit">Add</button>
+  </form>
+
+  <script>
+    const list = document.getElementById('list');
+    const form = document.getElementById('form');
+
+    async function load() {
+      const res = await fetch('/api/products');
+      const data = await res.json();
+      list.innerHTML = '<ul>' + data.map(p =>
+        `<li><strong>${p.name}</strong> — $${p.price} <em>${p.description||''}</em></li>`
+      ).join('') + '</ul>';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const body = Object.fromEntries(fd.entries());
+      await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      form.reset();
+      await load();
+    });
+
+    load();
+  </script>
+</body>
+</html>
