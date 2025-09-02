@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/style.css" />
+  <style>#status{margin:.5rem 0;padding:.4rem .6rem;border-radius:8px;background:#f5f5f5;display:inline-block}</style>
+</head>
+<body>
+  <h1>Products</h1>
+  <div id="status">Connecting…</div>
+  <div id="list"></div>
+
+  <form id="form">
+    <input name="name" placeholder="name" required />
+    <input name="price" type="number" step="0.01" placeholder="price" required />
+    <input name="description" placeholder="description" />
+    <button type="submit">Add</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const list = document.getElementById('list');
+    const form = document.getElementById('form');
+    const statusEl = document.getElementById('status');
+
+    function renderList(items){
+      list.innerHTML = '<ul>' + items.map(p =>
+        `<li><strong>${escapeHtml(p.name)}</strong> — $${fmt(p.price)} <em>${escapeHtml(p.description||'')}</em></li>`
+      ).join('') + '</ul>';
+    }
+    function appendItem(p){
+      if(!list.querySelector('ul')) list.innerHTML = '<ul></ul>';
+      const ul = list.querySelector('ul');
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${escapeHtml(p.name)}</strong> — $${fmt(p.price)} <em>${escapeHtml(p.description||'')}</em>`;
+      ul.appendChild(li);
+    }
+    function fmt(v){ const n=Number(v); return Number.isFinite(n) ? n.toFixed(2) : String(v); }
+    function escapeHtml(s){ return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+
+    async function load() {
+      const res = await fetch('/api/products');
+      renderList(await res.json());
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const body = Object.fromEntries(fd.entries());
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (res.ok) { try { appendItem(await res.json()); } catch {} }
+      form.reset();
+    });
+
+    const socket = io();
+    socket.on('connect', () => statusEl.textContent = 'Live updates: connected');
+    socket.on('disconnect', () => statusEl.textContent = 'Live updates: offline');
+    socket.on('product:created', (p) => appendItem(p));
+
+    load();
+  </script>
+</body>
+</html>
