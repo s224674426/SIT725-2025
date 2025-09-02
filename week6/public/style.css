@@ -1,0 +1,5 @@
+body { font-family: system-ui, Arial, sans-serif; margin: 2rem; }
+h1 { margin-bottom: 0.5rem; }
+form { margin-top: 1rem; display: flex; gap: 0.5rem; }
+input { padding: 0.4rem 0.6rem; }
+button { padding: 0.4rem 0.8rem; cursor: pointer; }

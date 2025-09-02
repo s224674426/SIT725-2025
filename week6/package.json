@@ -1,0 +1,37 @@
+{
+  "name": "sit725-mvc-example",
+  "version": "1.0.0",
+  "description": "SIT725 Week 5 MVC refactor (Express + PostgreSQL)",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "db:setup": "node -e \"console.log('Run the SQL in db/schema.sql and db/seed.sql using psql')\"",
+    "test": "NODE_ENV=test jest --runInBand --coverage",
+    "test:watch": "NODE_ENV=test jest --watch"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.19.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "jest": "^30.1.2",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.1.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "**/*.js",
+      "!server.js",
+      "!**/node_modules/**",
+      "!**/tests/**"
+    ]
+  }
+}
+
